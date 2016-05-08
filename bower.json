@@ -1,0 +1,23 @@
+{
+  "name": "game",
+  "description": "",
+  "main": "",
+  "authors": [
+    "James Parker"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "three.js": "0.75.0",
+    "stats.js": "*"
+  }
+}
