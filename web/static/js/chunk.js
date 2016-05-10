@@ -46,6 +46,12 @@ class Chunk {
         }
     }
 
+    voxelActive(position) {
+        if (this.voxels[Math.floor(position.x)] && this.voxels[Math.floor(position.y)]) {
+            return this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)];
+        }
+    }
+
     regenerateMesh(): void {
         this.state = ChunkState.Loading;
         var self = this;
@@ -57,7 +63,7 @@ class Chunk {
             geometry.addAttribute("normal", new THREE.BufferAttribute(e.data.normals, 3));
             geometry.addAttribute("uv", new THREE.BufferAttribute(e.data.uvs, 2));
             geometry.setIndex(new THREE.BufferAttribute(e.data.indices, 1));
-            this.material = new THREE.MeshLambertMaterial({ map: self.texture }),
+            this.material = new THREE.MeshLambertMaterial({ map: self.texture });
             this.mesh = new THREE.Mesh(geometry, this.material);
             this.mesh.position.x = this.position.x * (ChunkSize * BlockSize);
             this.mesh.position.z = this.position.y * (ChunkSize * BlockSize);
@@ -71,67 +77,6 @@ class Chunk {
             voxels: this.voxels,
             Lod: lod
         });
-    }
-
-    generateBlock(geometry: THREE.Geometry, x: number, y: number, z: number) {
-        var xPos = x * Chunk.BlockSize;
-        var yPos = y * Chunk.BlockSize;
-        var zPos = z * Chunk.BlockSize;
-        var halfBlock = Chunk.BlockSize / 2;
-
-        var v0 = geometry.vertices.push(new THREE.Vector3(xPos - halfBlock, yPos - halfBlock, zPos + halfBlock)) - 1;
-        var v1 = geometry.vertices.push(new THREE.Vector3(xPos + halfBlock, yPos - halfBlock, zPos + halfBlock)) - 1;
-        var v2 = geometry.vertices.push(new THREE.Vector3(xPos + halfBlock, yPos + halfBlock, zPos + halfBlock)) - 1;
-        var v3 = geometry.vertices.push(new THREE.Vector3(xPos - halfBlock, yPos + halfBlock, zPos + halfBlock)) - 1;
-        var v4 = geometry.vertices.push(new THREE.Vector3(xPos + halfBlock, yPos - halfBlock, zPos - halfBlock)) - 1;
-        var v5 = geometry.vertices.push(new THREE.Vector3(xPos - halfBlock, yPos - halfBlock, zPos - halfBlock)) - 1;
-        var v6 = geometry.vertices.push(new THREE.Vector3(xPos - halfBlock, yPos + halfBlock, zPos - halfBlock)) - 1;
-        var v7 = geometry.vertices.push(new THREE.Vector3(xPos + halfBlock, yPos + halfBlock, zPos - halfBlock)) - 1;
-
-        var normal: THREE.Vector3;
-        var color = new THREE.Color(0xffaa00);
-
-        // Front
-        if (z >= ChunkSize - 1 || !this.voxels[x][y][z + 1]) {//.isActive()) {
-            normal = new THREE.Vector3(0, 0, 1);
-            geometry.faces.push(new THREE.Face3(v0, v1, v2, normal, color));
-            geometry.faces.push(new THREE.Face3(v0, v2, v3, normal, color));
-        }
-
-        // Back
-        if (z <= 0 || !this.voxels[x][y][z - 1]) {//.isActive()) {
-            normal = new THREE.Vector3(0, 0, -1);
-            geometry.faces.push(new THREE.Face3(v4, v5, v6, normal, color));
-            geometry.faces.push(new THREE.Face3(v4, v6, v7, normal, color));
-        }
-
-        // Right
-        if (x >= ChunkSize - 1 || !this.voxels[x + 1][y][z]) {//.isActive()) {
-            normal = new THREE.Vector3(1, 0, 0);
-            geometry.faces.push(new THREE.Face3(v1, v4, v7, normal, color));
-            geometry.faces.push(new THREE.Face3(v1, v7, v2, normal, color));
-        }
-
-        // Left
-        if (x <= 0 || !this.voxels[x - 1][y][z]) {//.isActive()) {
-            normal = new THREE.Vector3(-1, 0, 0);
-            geometry.faces.push(new THREE.Face3(v5, v0, v3, normal, color));
-            geometry.faces.push(new THREE.Face3(v5, v3, v6, normal, color));
-        }
-
-        // Top
-        if (y >= ChunkSize - 1 || !this.voxels[x][y + 1][z]) {//.isActive()) {
-            normal = new THREE.Vector3(0, 1, 0);
-            geometry.faces.push(new THREE.Face3(v3, v2, v7, normal, color));
-            geometry.faces.push(new THREE.Face3(v3, v7, v6, normal, color));
-        }
-
-        // Bottom
-        if (y <= 0 || !this.voxels[x][y - 1][z]) {//.isActive()) {
-            normal = new THREE.Vector3(0, -1, 0);
-            geometry.faces.push(new THREE.Face3(v5, v4, v1, normal, color));
-            geometry.faces.push(new THREE.Face3(v5, v1, v0, normal, color));
-        }
     }
 }
 

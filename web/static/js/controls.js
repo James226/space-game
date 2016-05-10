@@ -118,7 +118,7 @@
     this.lastY = 0;
     this.onMouseMove = function (event) {
         this.mouseX += event.movementX * 0.1;
-        this.mouseY -= event.movementY * 0.1;
+        this.mouseY += event.movementY * 0.1;
     };
 
     this.onKeyDown = function (event) {

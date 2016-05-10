@@ -6,6 +6,8 @@ var ChunkState = {
     Loaded: 2
 }
 
+var NumChunks = 8;
+
 class ChunkManager {
     chunks;
     maxLoading;
@@ -33,8 +35,8 @@ class ChunkManager {
                 context.drawImage(img, 0, 0 );
                 var heightmapData = context.getImageData(0, 0, img.width, img.height);
                 texture.repeat.set(2, 2);
-                for (var x = 0; x < 50; x++) {
-                    for (var z = 0; z < 50; z++) {
+                for (var x = 0; x < NumChunks; x++) {
+                    for (var z = 0; z < NumChunks; z++) {
                         this.chunks.push(new Chunk(this.scene, new THREE.Vector2(x, z), worker, texture, heightmapData));
                     }
                 }
@@ -55,18 +57,21 @@ class ChunkManager {
             }
         }
 
-        //if (this.timeSinceLast > 10) {
-            for (var j in chunks) {
-                if (chunks.hasOwnProperty(j)) {
-                    if (numLoading >= this.maxLoading) break;
-                    if (this.chunks[j].state === ChunkState.Pending) {
-                        this.chunks[j].regenerateMesh();
-                        this.timeSinceLast = 0;
-                        numLoading++;
-                    }
+        for (var j in chunks) {
+            if (chunks.hasOwnProperty(j)) {
+                if (numLoading >= this.maxLoading) break;
+                if (this.chunks[j].state === ChunkState.Pending) {
+                    this.chunks[j].regenerateMesh();
+                    this.timeSinceLast = 0;
+                    numLoading++;
                 }
             }
-        //}
+        }
+    }
+
+    voxelActive(position) {
+        if (this.chunks[0])
+            return this.chunks[0].voxelActive(position);
     }
 }
 
