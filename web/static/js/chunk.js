@@ -67,6 +67,8 @@ class Chunk {
             this.mesh = new THREE.Mesh(geometry, this.material);
             this.mesh.position.x = this.position.x * (ChunkSize * BlockSize);
             this.mesh.position.z = this.position.y * (ChunkSize * BlockSize);
+            this.mesh.castShadow = true;
+            this.mesh.receiveShadow = true;
             this.scene.add(this.mesh);
         };
         var lodPercent = (Math.min(400, new THREE.Vector2(0, 0).sub(this.position).length()) / 400);

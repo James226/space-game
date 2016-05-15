@@ -12,7 +12,8 @@ export class Game {
     container;
     chunkManager: ChunkManager;
 
-    constructor() {
+    constructor(socket) {
+        this.socket = socket;
         this.container = document.getElementById('game-container');
 
         this.scene = new THREE.Scene();
@@ -21,6 +22,7 @@ export class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: false });
         this.renderer.setPixelRatio(this.container.clientWidth / this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this.container.appendChild(this.renderer.domElement);
 
         this.camera = new THREE.PerspectiveCamera(27, window.innerWidth / window.innerHeight, 1, 3500);
@@ -33,7 +35,14 @@ export class Game {
 
         var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
         directionalLight.position.set(.5, 1, 0);
+
         this.scene.add(directionalLight);
+
+//         var light = new THREE.PointLight( 0xff0000, 1, 100 );
+// light.position.set( 50, 50, 50 );
+// light.castShadow = true;
+//
+// this.scene.add( light );
 
 
         var geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -42,6 +51,8 @@ export class Game {
         this.cube.position.x = 10;
         this.cube.position.y = 20;
         this.cube.position.z = 10;
+        this.cube.castShadow = true;
+
         this.scene.add( this.cube );
         this.cube.add(this.camera);
 
@@ -81,6 +92,24 @@ export class Game {
             this.container.requestPointerLock();
         });
 
+        window.addEventListener("keypress", this.onKeyPress, false);
+
+        var chatInput = document.getElementById("chatInput");
+        chatInput.addEventListener("keypress", event => {
+            if (event.keyCode == 13) {
+                this.socket.lobby.push("new_msg", { message: chatInput.value });
+                chatInput.value = "";
+                chatInput.blur();
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+
+        this.socket.lobby.on("new_msg", ({message: message}) => {
+            document.getElementById("chatLog").innerHTML += "<br />" + message;
+            document.getElementById("chatLog").scrollTop = document.getElementById("chatLog").scrollHeight;
+        })
+
         document.addEventListener("fullscreenchange", () => this.onFullscreen, false);
         document.addEventListener("mozfullscreenchange", () => this.onFullscreen, false);
         document.addEventListener("webkitfullscreenchange", () => this.onFullscreen, false);
@@ -101,6 +130,13 @@ export class Game {
         this.container.appendChild(this.stats.domElement);
 
         this.render();
+    }
+
+    onKeyPress(event) {
+        switch(event.keyCode) {
+            case 13:
+                document.getElementById("chatInput").focus();
+        }
     }
 
     onFullscreen(e) {
