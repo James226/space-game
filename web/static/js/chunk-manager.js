@@ -6,7 +6,7 @@ var ChunkState = {
     Loaded: 2
 }
 
-var NumChunks = 8;
+var NumChunks = 50;
 
 class ChunkManager {
     chunks;

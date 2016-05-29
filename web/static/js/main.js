@@ -33,7 +33,7 @@ export class Game {
 
         this.scene = new THREE.Scene();
         this.clock = new THREE.Clock();
-        this.scene.add(new THREE.AmbientLight(0xffffff));//(0x444444));
+        this.scene.add(new THREE.AmbientLight(0x444444));//(0x444444));
         this.renderer = new THREE.WebGLRenderer({ antialias: false });
         this.renderer.setPixelRatio(this.container.clientWidth / this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
@@ -49,7 +49,7 @@ export class Game {
         this.camera.rotation.x = -0.3;
 
         var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(.5, 1, 0);
+        directionalLight.position.set(-.5, 1, .5);
 
         this.scene.add(directionalLight);
 

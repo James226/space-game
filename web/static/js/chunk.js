@@ -60,10 +60,12 @@ class Chunk {
             this.scene.remove(this.mesh);
             var geometry = new THREE.BufferGeometry();
             geometry.addAttribute("position", new THREE.BufferAttribute(e.data.vertices, 3));
-            geometry.addAttribute("normal", new THREE.BufferAttribute(e.data.normals, 3));
+            //geometry.addAttribute("normal", new THREE.BufferAttribute(e.data.normals, 3));
             geometry.addAttribute("uv", new THREE.BufferAttribute(e.data.uvs, 2));
             geometry.setIndex(new THREE.BufferAttribute(e.data.indices, 1));
-            this.material = new THREE.MeshLambertMaterial({ map: self.texture });
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+            this.material = new THREE.MeshLambertMaterial({ map: self.texture, side: THREE.BackSide });
             this.mesh = new THREE.Mesh(geometry, this.material);
             this.mesh.position.x = this.position.x * (ChunkSize * BlockSize);
             this.mesh.position.z = this.position.y * (ChunkSize * BlockSize);
