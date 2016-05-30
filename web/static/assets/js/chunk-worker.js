@@ -371,7 +371,7 @@ onmessage = e => {
 		// check which edges are crossed, and estimate the point location
 		//    using a weighted average of scalar values at edge endpoints.
 		// store the vertex in an array for use later.
-		var mu = 0.6;
+		var mu = 0.5;
 
 		// bottom of the cube
 		if ( bits & 1 )

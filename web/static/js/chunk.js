@@ -15,7 +15,7 @@ class Chunk {
     texture: THREE.Texture;
     scene: THREE.Scene;
 
-    constructor(scene: THREE.Scene, position: THREE.Vector2, worker: Worker, texture: THREE.Texture, heightmap) {
+    constructor(scene: THREE.Scene, position: THREE.Vector3, worker: Worker, texture: THREE.Texture, heightmap) {
         this.scene = scene;
         this.position = position;
        // this.material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
@@ -24,6 +24,7 @@ class Chunk {
         this.state = ChunkState.Pending;
         this.worker = worker;
         this.voxels = [];
+        this.pristine = this.position.y !== 0;
 
         var currentStatus = 0xffffffff;
         for (var x = 0; x <= ChunkSize; x++) {
@@ -33,17 +34,20 @@ class Chunk {
                 this.voxels[x][y] = [];
 
                 for (var z = 0; z <= ChunkSize; z++) {
-                    this.voxels[x][y][z] = true; // new Voxel();
-                    var heightPos = ((((x + position.x * ChunkSize)) + ((z + (position.y * ChunkSize)) * heightmap.width)) * 4);
-                    window.heightmap = heightmap;
-                    if (heightPos > heightmap.data.length) {
-                        if (Math.abs(ChunkSize / 2 - x) > ChunkSize - y && Math.abs(ChunkSize / 2 - z) > ChunkSize - y) this.voxels[x][y][z] = false; //this.voxels[x][y][z].setActive(false);
-                    } else {
-                        if ((heightmap.data[heightPos] * (32/255)) < y) this.voxels[x][y][z] = false;
+                    this.voxels[x][y][z] = this.position.y < 1;
+                    if (this.position.y === 0) {
+                        var heightPos = ((((x + position.x * ChunkSize)) + ((z + (position.z * ChunkSize)) * heightmap.width)) * 4);
+                        window.heightmap = heightmap;
+                        if (heightPos > heightmap.data.length) {
+                            if (Math.abs(ChunkSize / 2 - x) > ChunkSize - y && Math.abs(ChunkSize / 2 - z) > ChunkSize - y) this.voxels[x][y][z] = false; //this.voxels[x][y][z].setActive(false);
+                        } else {
+                            if ((heightmap.data[heightPos] * (32/255)) < y) this.voxels[x][y][z] = false;
+                        }
                     }
                 }
             }
         }
+        this.position.multiplyScalar(ChunkSize * BlockSize);
     }
 
     voxelActive(position) {
@@ -52,12 +56,23 @@ class Chunk {
         }
     }
 
+    create(position) {
+        if (this.voxels[Math.floor(position.x)] &&
+            this.voxels[Math.floor(position.x)][Math.floor(position.y)] &&
+            !this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)]) {
+                this.pristine = false;
+                this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)] = true;
+                this.regenerateMesh();
+                return true;
+        }
+        return false;
+    }
+
     destroy(position) {
-        console.log("Attempting to destroy");
         if (this.voxels[Math.floor(position.x)] &&
             this.voxels[Math.floor(position.x)][Math.floor(position.y)] &&
             this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)]) {
-                console.log("Destroying")
+                this.pristine = false;
                 this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)] = false;
                 this.regenerateMesh();
                 return true;
@@ -66,6 +81,10 @@ class Chunk {
     }
 
     regenerateMesh(): void {
+        if (this.pristine) {
+            this.state = ChunkState.Loaded;
+            return;
+        }
         this.state = ChunkState.Loading;
         var self = this;
         this.worker.onmessage = e => {
@@ -80,8 +99,7 @@ class Chunk {
             geometry.computeVertexNormals();
             this.material = new THREE.MeshLambertMaterial({ map: self.texture, side: THREE.BackSide });
             this.mesh = new THREE.Mesh(geometry, this.material);
-            this.mesh.position.x = this.position.x * (ChunkSize * BlockSize);
-            this.mesh.position.z = this.position.y * (ChunkSize * BlockSize);
+            this.mesh.position.set(this.position.x, this.position.y, this.position.z);
             this.mesh.castShadow = true;
             this.mesh.receiveShadow = true;
             this.scene.add(this.mesh);

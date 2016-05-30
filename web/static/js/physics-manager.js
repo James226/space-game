@@ -9,7 +9,6 @@ class PhysicsManager {
     }
 
     update(deltaTime) {
-        return;
         for (var i in this.objects) {
             // if (!this.voxelCollisionCheck(new THREE.Vector3(this.objects[i].position.x, this.objects[i].position.y - 1, this.objects[i].position.z))) {
             //     this.objects[i].position.y -= 10 * deltaTime;

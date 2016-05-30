@@ -6,7 +6,8 @@ var ChunkState = {
     Loaded: 2
 }
 
-var NumChunks = 20;
+var NumChunks = 10;
+var ChunkSize = 32;
 
 class ChunkManager {
     chunks;
@@ -35,14 +36,14 @@ class ChunkManager {
                 context.drawImage(img, 0, 0 );
                 var heightmapData = context.getImageData(0, 0, img.width, img.height);
                 texture.repeat.set(2, 2);
-                for (var x = 0; x < NumChunks; x++) {
-                    for (var z = 0; z < NumChunks; z++) {
-                        this.chunks.push(new Chunk(this.scene, new THREE.Vector2(x, z), worker, texture, heightmapData));
-                    }
+                console.log(NumChunks / 2);
+                for (var x = 0; x < NumChunks; x++)
+                for (var y = -Math.floor(NumChunks/2); y < Math.floor(NumChunks/2); y++)
+                for (var z = 0; z < NumChunks; z++) {
+                    this.chunks[[x, y, z]] = new Chunk(this.scene, new THREE.Vector3(x, y, z), worker, texture, heightmapData);
                 }
             });
         });
-
     }
 
     update(delta: number) {
@@ -70,13 +71,33 @@ class ChunkManager {
     }
 
     voxelActive(position) {
-        if (this.chunks[0])
-            return this.chunks[0].voxelActive(position);
+        var pos = position.clone().divideScalar(ChunkSize);
+        pos.x = Math.floor(pos.x);
+        pos.y = Math.floor(pos.y);
+        pos.z = Math.floor(pos.z);
+
+        if (this.chunks[[pos.x, pos.y, pos.z]])
+            return this.chunks[[pos.x, pos.y, pos.z]].voxelActive(position.clone().sub(pos.multiplyScalar(ChunkSize)));
     }
 
     destroy(position) {
-        if (this.chunks[0])
-            return this.chunks[0].destroy(position);
+        var pos = position.clone().divideScalar(ChunkSize);
+        pos.x = Math.floor(pos.x);
+        pos.y = Math.floor(pos.y);
+        pos.z = Math.floor(pos.z);
+
+        if (this.chunks[[pos.x, pos.y, pos.z]])
+            return this.chunks[[pos.x, pos.y, pos.z]].destroy(position.clone().sub(pos.multiplyScalar(ChunkSize)));
+    }
+
+    create(position) {
+        var pos = position.clone().divideScalar(ChunkSize);
+        pos.x = Math.floor(pos.x);
+        pos.y = Math.floor(pos.y);
+        pos.z = Math.floor(pos.z);
+
+        if (this.chunks[[pos.x, pos.y, pos.z]])
+            return this.chunks[[pos.x, pos.y, pos.z]].create(position.clone().sub(pos.multiplyScalar(ChunkSize)));
     }
 }
 

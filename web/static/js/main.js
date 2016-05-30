@@ -35,7 +35,7 @@ export class Game {
 
         this.scene = new THREE.Scene();
         this.clock = new THREE.Clock();
-        this.scene.add(new THREE.AmbientLight(0x444444));//(0x444444));
+        this.scene.add(new THREE.AmbientLight(0x888888));//(0x444444));
         this.renderer = new THREE.WebGLRenderer({ antialias: false });
         this.renderer.setPixelRatio(this.container.clientWidth / this.container.clientHeight);
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
@@ -204,21 +204,40 @@ export class Game {
     }
 
     onKeyPress(event) {
-        console.log(event.keyCode, 'q')
         switch(event.keyCode) {
             case 13:
                 document.getElementById("chatInput").focus();
                 break;
 
             case 101:
-                console.log("Press");
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, -1)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 0)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 1)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, -1)));
                 game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, 0)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, 1)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, -1)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, 0)));
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, 1)));
+                event.preventDefault();
+                event.stopPropagation();
+                break;
+
+            case 103:
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(-1, 1, -1)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 0)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 1)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(0, 1, -1)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(0, 1, 0)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(0, 1, 1)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(1, 1, -1)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(1, 1, 0)));
+                game.chunkManager.create(game.player.position.clone().sub(new THREE.Vector3(1, 1, 1)));
                 event.preventDefault();
                 event.stopPropagation();
                 break;
 
             case 113:
-                console.log("Press");
                 var matrix = new THREE.Matrix4();
                 matrix.extractRotation( game.player.matrix );
 
