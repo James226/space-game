@@ -17,6 +17,7 @@ var tagOrComment = new RegExp(
     + ')>',
     'gi');
 
+var game;
 export class Game {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
@@ -28,6 +29,7 @@ export class Game {
     chunkManager: ChunkManager;
 
     constructor(socket) {
+        game = this;
         this.socket = socket;
         this.container = document.getElementById('game-container');
 
@@ -41,14 +43,14 @@ export class Game {
         this.container.appendChild(this.renderer.domElement);
 
         this.camera = new THREE.PerspectiveCamera(27, window.innerWidth / window.innerHeight, 1, 3500);
-        this.camera.position.z = 60;
-        this.camera.position.y = 25;
+        this.camera.position.z = 20;
+        this.camera.position.y = 7;
         this.camera.position.x = 0;
 
         // this.camera.rotation.x = -0.7;
         this.camera.rotation.x = -0.3;
 
-        var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        var directionalLight = new THREE.DirectionalLight(0x333333, 0.5);
         directionalLight.position.set(-.5, 1, .5);
 
         this.scene.add(directionalLight);
@@ -202,9 +204,31 @@ export class Game {
     }
 
     onKeyPress(event) {
+        console.log(event.keyCode, 'q')
         switch(event.keyCode) {
             case 13:
                 document.getElementById("chatInput").focus();
+                break;
+
+            case 101:
+                console.log("Press");
+                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, 0)));
+                event.preventDefault();
+                event.stopPropagation();
+                break;
+
+            case 113:
+                console.log("Press");
+                var matrix = new THREE.Matrix4();
+                matrix.extractRotation( game.player.matrix );
+
+                var direction = new THREE.Vector3( 0, 0, 1 );
+                direction.applyMatrix4(matrix);
+                game.chunkManager.destroy(game.player.position.clone().sub(direction));
+                game.chunkManager.destroy(game.player.position.clone().sub(direction.multiplyScalar(2)));
+                event.preventDefault();
+                event.stopPropagation();
+                break;
         }
     }
 

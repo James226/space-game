@@ -6,7 +6,7 @@ var ChunkState = {
     Loaded: 2
 }
 
-var NumChunks = 50;
+var NumChunks = 20;
 
 class ChunkManager {
     chunks;
@@ -72,6 +72,11 @@ class ChunkManager {
     voxelActive(position) {
         if (this.chunks[0])
             return this.chunks[0].voxelActive(position);
+    }
+
+    destroy(position) {
+        if (this.chunks[0])
+            return this.chunks[0].destroy(position);
     }
 }
 

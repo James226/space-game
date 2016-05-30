@@ -47,9 +47,22 @@ class Chunk {
     }
 
     voxelActive(position) {
-        if (this.voxels[Math.floor(position.x)] && this.voxels[Math.floor(position.y)]) {
+        if (this.voxels[Math.floor(position.x)] && this.voxels[Math.floor(position.x)][Math.floor(position.y)]) {
             return this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)];
         }
+    }
+
+    destroy(position) {
+        console.log("Attempting to destroy");
+        if (this.voxels[Math.floor(position.x)] &&
+            this.voxels[Math.floor(position.x)][Math.floor(position.y)] &&
+            this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)]) {
+                console.log("Destroying")
+                this.voxels[Math.floor(position.x)][Math.floor(position.y)][Math.floor(position.z)] = false;
+                this.regenerateMesh();
+                return true;
+        }
+        return false;
     }
 
     regenerateMesh(): void {
