@@ -17,13 +17,16 @@ class PhysicsManager {
             // }
             var velocity = new THREE.Vector3(this.objects[i].velocity.x, this.objects[i].velocity.y, this.objects[i].velocity.z)
             if (!this.voxelCollisionCheck(new THREE.Vector3(this.objects[i].position.x, this.objects[i].position.y - 1, this.objects[i].position.z))) {
+                console.log("Down")
                 velocity.y = -10;
             } else {
                 var space = this.voxelCollisionCheck(new THREE.Vector3(this.objects[i].position.x, this.objects[i].position.y - 0.5, this.objects[i].position.z));
                 if (!space) {
+                    console.log("Still")
                     velocity.y = 0;
                     this.objects[i].position.y = Math.round(this.objects[i].position.y)  - 0.01;
                 } else {
+                    console.log("Up")
                     velocity.y = 20;
                 }
             }

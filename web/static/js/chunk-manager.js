@@ -46,6 +46,17 @@ class ChunkManager {
         });
     }
 
+    load(socket) {
+        socket.lobby.on("world_state", ({state: state, position}) => {
+            this.chunks[[position.x, position.y, position.z]].set(state);
+        });
+        for (var x = 0; x < NumChunks; x++)
+        for (var y = -Math.floor(NumChunks/2); y < Math.floor(NumChunks/2); y++)
+        for (var z = 0; z < NumChunks; z++) {
+            socket.lobby.push("get_world_state", { x: x, y: y, z: z });
+        }
+    }
+
     update(delta: number) {
         var numLoading = 0;
         this.timeSinceLast += delta;

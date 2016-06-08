@@ -1,0 +1,4 @@
+<button id="go">Go</button>
+
+<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+<script>require("web/static/js/test")()</script>

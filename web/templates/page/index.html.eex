@@ -6,3 +6,5 @@
         <input id="chatInput" style="position: absolute; left: 1%; bottom: 2%; width: 20%; height: 5%;" class="form-control" />
     </div>
 </div>
+<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+<script>require("web/static/js/app")</script>

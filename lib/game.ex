@@ -9,10 +9,12 @@ defmodule Game do
     children = [
       # Start the endpoint when the application starts
       supervisor(Game.Endpoint, []),
+
+      supervisor(World.Supervisor, []),
       # Start the Ecto repository
       worker(Game.Repo, []),
       # Here you could define other workers and supervisors as children
-      # worker(Game.Worker, [arg1, arg2, arg3]),
+      worker(Game.WorldState, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

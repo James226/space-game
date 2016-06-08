@@ -21,7 +21,7 @@ class Chunk {
        // this.material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
 
         this.texture = texture;
-        this.state = ChunkState.Pending;
+        this.state = ChunkState.Loaded;
         this.worker = worker;
         this.voxels = [];
         this.pristine = this.position.y !== 0;
@@ -34,20 +34,30 @@ class Chunk {
                 this.voxels[x][y] = [];
 
                 for (var z = 0; z <= ChunkSize; z++) {
-                    this.voxels[x][y][z] = this.position.y < 1;
-                    if (this.position.y === 0) {
-                        var heightPos = ((((x + position.x * ChunkSize)) + ((z + (position.z * ChunkSize)) * heightmap.width)) * 4);
-                        window.heightmap = heightmap;
-                        if (heightPos > heightmap.data.length) {
-                            if (Math.abs(ChunkSize / 2 - x) > ChunkSize - y && Math.abs(ChunkSize / 2 - z) > ChunkSize - y) this.voxels[x][y][z] = false; //this.voxels[x][y][z].setActive(false);
-                        } else {
-                            if ((heightmap.data[heightPos] * (32/255)) < y) this.voxels[x][y][z] = false;
-                        }
-                    }
+                    // this.voxels[x][y][z] = this.position.y < 1;
+                    // if (this.position.y === 0) {
+                    //     var heightPos = ((((x + position.x * ChunkSize)) + ((z + (position.z * ChunkSize)) * heightmap.width)) * 4);
+                    //     window.heightmap = heightmap;
+                    //     if (heightPos > heightmap.data.length) {
+                    //         if (Math.abs(ChunkSize / 2 - x) > ChunkSize - y && Math.abs(ChunkSize / 2 - z) > ChunkSize - y) this.voxels[x][y][z] = false; //this.voxels[x][y][z].setActive(false);
+                    //     } else {
+                    //         if ((heightmap.data[heightPos] * (32/255)) < y) this.voxels[x][y][z] = false;
+                    //     }
+                    // }
                 }
             }
         }
         this.position.multiplyScalar(ChunkSize * BlockSize);
+    }
+
+    set(list) {
+        for (var x = 0; x <= ChunkSize; x++)
+        for (var y = 0; y <= ChunkSize; y++)
+        for (var z = 0; z <= ChunkSize; z++) {
+            this.voxels[x][y][z] = list[x + y * ChunkSize + z * ChunkSize * ChunkSize];
+
+        }
+        this.state = ChunkState.Pending;
     }
 
     voxelActive(position) {

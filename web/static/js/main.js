@@ -106,11 +106,7 @@ export class Game {
             } else if (this.container.webkitRequestFullscreen) {
                 this.container.webkitRequestFullscreen();
             }
-
-
             this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-
         }, false);
 
         this.container.addEventListener("mousedown", e => {
@@ -131,12 +127,20 @@ export class Game {
         });
 
         var element = document.createElement("div");
+
+        this.socket.lobby = this.socket.socket.channel("rooms:lobby", {})
+        this.socket.lobby.join()
+          .receive("ok", resp => {
+              this.chunkManager.load(this.socket);
+              console.log("Joined successfully", resp)
+           })
+          .receive("error", resp => { console.log("Unable to join", resp) })
+
         this.socket.lobby.on("new_msg", ({message: message}) => {
             element.innerText = message;
             document.getElementById("chatLog").innerHTML += (document.getElementById("chatLog").innerHTML.length === 0) ? element.innerHTML : "<br />" + element.innerHTML;
             document.getElementById("chatLog").scrollTop = document.getElementById("chatLog").scrollHeight;
         })
-
         document.addEventListener("fullscreenchange", () => this.onFullscreen, false);
         document.addEventListener("mozfullscreenchange", () => this.onFullscreen, false);
         document.addEventListener("webkitfullscreenchange", () => this.onFullscreen, false);
@@ -210,15 +214,17 @@ export class Game {
                 break;
 
             case 101:
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, -1)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 0)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 1)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, -1)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, 0)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, 1)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, -1)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, 0)));
-                game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, 1)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, -1)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 0)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(-1, 1, 1)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, -1)));
+                var pos = game.player.position.clone().sub(new THREE.Vector3(0, 1, 0));
+                game.socket.lobby.push("world.destroy", {x: pos.x, y: pos.y, z: pos.z});
+                game.chunkManager.destroy(pos);
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(0, 1, 1)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, -1)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, 0)));
+                // game.chunkManager.destroy(game.player.position.clone().sub(new THREE.Vector3(1, 1, 1)));
                 event.preventDefault();
                 event.stopPropagation();
                 break;
