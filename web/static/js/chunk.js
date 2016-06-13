@@ -107,7 +107,7 @@ class Chunk {
             geometry.setIndex(new THREE.BufferAttribute(e.data.indices, 1));
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
-            this.material = new THREE.MeshLambertMaterial({ map: self.texture, side: THREE.BackSide });
+            this.material = new THREE.MeshLambertMaterial({ map: self.texture, side: THREE.BackSide});
             this.mesh = new THREE.Mesh(geometry, this.material);
             this.mesh.position.set(this.position.x, this.position.y, this.position.z);
             this.mesh.castShadow = true;

@@ -291,6 +291,7 @@ var triTable = new Int32Array([
 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]);
 
 var chunkSize = 32;
+var marchingCubes = true;
 var message = {
     vertices: new Float32Array(chunkSize * chunkSize * chunkSize * 12),
     normals: new Float32Array(chunkSize * chunkSize * chunkSize * 12),
@@ -323,6 +324,28 @@ onmessage = e => {
     var vertexIndex = 0;
 
     var voxels = e.data.voxels;
+
+    if (!marchingCubes) {
+        for (var x = 0; x < chunkSize; x+=lod)
+        for (var y = 0; y < chunkSize; y+=lod)
+        for (var z = 0; z < chunkSize; z+=lod) {
+            if (!e.data.voxels[x][y][z]) {//.active === false) {
+                continue;
+            }
+
+            currentPos = this.generateBlock(geometry, x, y, z, chunkSize, e.data.blockSize, e.data.voxels, message, lod, currentPos);
+        }
+
+
+        var msg = {
+            vertices: message.vertices.slice(0, currentPos * 12),
+            normals: message.normals.slice(0, currentPos * 12),
+            indices: message.indices.slice(0, currentPos * 6),
+            uvs: message.uvs.slice(0, currentPos * 8),
+        }
+        postMessage(msg, [msg.vertices.buffer, msg.normals.buffer, msg.indices.buffer, msg.uvs.buffer]);
+        return;
+    }
 
     for (var x = 0; x < chunkSize; x+=lod)
     for (var y = 0; y < chunkSize; y+=lod)

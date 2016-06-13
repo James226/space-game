@@ -35,7 +35,8 @@ defmodule Game.Mixfile do
      {:postgrex, ">= 0.0.0"},
      {:phoenix_html, "~> 2.1"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
-     {:cowboy, "~> 1.0"}]
+     {:cowboy, "~> 1.0"},
+     {:amnesia, github: "meh/amnesia", tag: :master}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

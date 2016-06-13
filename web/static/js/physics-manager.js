@@ -15,6 +15,7 @@ class PhysicsManager {
             // } else if(this.voxelCollisionCheck(new THREE.Vector3(this.objects[i].position.x, this.objects[i].position.y - 0.9, this.objects[i].position.z))) {
             //     this.objects[i].position.y += 20 * deltaTime;
             // }
+
             var velocity = new THREE.Vector3(this.objects[i].velocity.x, this.objects[i].velocity.y, this.objects[i].velocity.z)
             if (!this.voxelCollisionCheck(new THREE.Vector3(this.objects[i].position.x, this.objects[i].position.y - 1, this.objects[i].position.z))) {
                 console.log("Down")

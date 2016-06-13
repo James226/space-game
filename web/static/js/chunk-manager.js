@@ -38,7 +38,8 @@ class ChunkManager {
                 texture.repeat.set(2, 2);
                 console.log(NumChunks / 2);
                 for (var x = 0; x < NumChunks; x++)
-                for (var y = -Math.floor(NumChunks/2); y < Math.floor(NumChunks/2); y++)
+                //for (var y = -Math.floor(NumChunks/2); y < Math.floor(NumChunks/2); y++)
+                for (var y = 0; y <= 0; y++)
                 for (var z = 0; z < NumChunks; z++) {
                     this.chunks[[x, y, z]] = new Chunk(this.scene, new THREE.Vector3(x, y, z), worker, texture, heightmapData);
                 }
@@ -47,11 +48,13 @@ class ChunkManager {
     }
 
     load(socket) {
+        var self = this;
         socket.lobby.on("world_state", ({state: state, position}) => {
-            this.chunks[[position.x, position.y, position.z]].set(state);
+            self.chunks[[position.x, position.y, position.z]].set(state.status);
         });
         for (var x = 0; x < NumChunks; x++)
-        for (var y = -Math.floor(NumChunks/2); y < Math.floor(NumChunks/2); y++)
+        //for (var y = -Math.floor(NumChunks/2); y < Math.floor(NumChunks/2); y++)
+        for (var y = 0; y <= 0; y++)
         for (var z = 0; z < NumChunks; z++) {
             socket.lobby.push("get_world_state", { x: x, y: y, z: z });
         }

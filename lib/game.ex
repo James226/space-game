@@ -1,10 +1,13 @@
 defmodule Game do
-  use Application
+  use Application, Amnesia
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
+
+    Amnesia.start
+    Database.create disk: [node]
 
     children = [
       # Start the endpoint when the application starts
